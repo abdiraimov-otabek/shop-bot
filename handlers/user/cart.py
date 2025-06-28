@@ -59,6 +59,7 @@ async def process_cart(message: Message, state: FSMContext):
 
         if order_cost != 0:
             markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+            markup = back_markup()
             markup.add("📦 Buyurtma berish")
 
             await message.answer(
@@ -147,6 +148,11 @@ async def checkout(message, state):
         f"{answer}\nUmumiy buyurtma summasi: {total_price} so'm.",
         reply_markup=check_markup(),
     )
+
+
+@dp.message_handler(IsUser(), text="👈 Buyurtma berish")
+async def back_to_menu(message: Message):
+    await message.reply("🏠 Asosiy menuga qaytdingiz.", reply_markup=back_markup())
 
 
 @dp.message_handler(
