@@ -25,20 +25,21 @@ async def process_questions(message: Message):
 
     if len(questions) == 0:
 
-        await message.answer("Нет вопросов.")
+        await message.answer("Hech qanday savol yo'q.")
 
     else:
 
-        for cid, question in questions:
+        await questions_answer(message, questions)
 
-            markup = InlineKeyboardMarkup()
-            markup.add(
-                InlineKeyboardButton(
-                    "Ответить", callback_data=question_cb.new(cid=cid, action="answer")
-                )
-            )
 
-            await message.answer(question, reply_markup=markup)
+async def questions_answer(message, questions):
+
+    res = ""
+
+    for question in questions:
+        res += f"Savol: <b>{question[1]}</b>\n\n"
+
+    await message.answer(res)
 
 
 @dp.callback_query_handler(IsAdmin(), question_cb.filter(action="answer"))
@@ -77,8 +78,8 @@ async def process_send_answer(message: Message, state: FSMContext):
         answer = data["answer"]
         cid = data["cid"]
 
-        question = db.fetchone("SELECT question FROM questions WHERE cid=?", (cid,))[0]
-        db.query("DELETE FROM questions WHERE cid=?", (cid,))
+        question = db.fetchone("SELECT question FROM questions WHERE cid=%s", (cid,))[0]
+        db.query("DELETE FROM questions WHERE cid=%s", (cid,))
         text = f"Вопрос: <b>{question}</b>\n\nОтвет: <b>{answer}</b>"
 
         await message.answer("Отправлено!", reply_markup=ReplyKeyboardRemove())

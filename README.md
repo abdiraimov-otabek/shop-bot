@@ -2,7 +2,110 @@
   <a href="https://t.me/example_store_bot"><img src="data/assets/logo.png" alt="ShopBot"></a>
 </p>
 
-This is an example Telegram shop bot. It's a simple and, most importantly, efficient way to place an order without leaving your favorite messenger.
+# Shop Bot
+
+A Telegram bot for managing an online shop with product catalog, cart functionality, and order management.
+
+## Features
+
+-   Product catalog with categories
+-   Shopping cart functionality
+-   Order management
+-   Admin panel for product management
+-   User support system
+-   PostgreSQL database integration
+
+## Setup
+
+### Prerequisites
+
+-   Python 3.7+
+-   PostgreSQL database
+-   Telegram Bot Token
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd Shop-bot-master
+```
+
+2. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Set up PostgreSQL database:
+
+```bash
+# Create database
+createdb shop_bot
+
+# Or using psql
+psql -U postgres
+CREATE DATABASE shop_bot;
+```
+
+4. Configure environment variables:
+
+```bash
+cp .env.example .env
+# Edit .env file with your configuration
+```
+
+5. Update the `.env` file with your settings:
+
+```
+BOT_TOKEN=your_bot_token_here
+DB_HOST=localhost
+DB_NAME=shop_bot
+DB_USER=postgres
+DB_PASSWORD=your_password_here
+DB_PORT=5432
+ADMINS=your_telegram_id
+```
+
+6. Run the bot:
+
+```bash
+python app.py
+```
+
+## Database Schema
+
+The bot uses PostgreSQL with the following tables:
+
+-   `products`: Product information
+-   `orders`: Customer orders
+-   `cart`: Shopping cart items
+-   `categories`: Product categories
+-   `wallet`: User wallet/balance
+-   `questions`: User support questions
+-   `users`: User information
+
+## Usage
+
+### For Users
+
+-   Browse products by category
+-   Add items to cart
+-   Place orders
+-   Check delivery status
+-   Contact support
+
+### For Admins
+
+-   Add/edit/delete products
+-   Manage categories
+-   View and process orders
+-   Respond to user questions
+
+## License
+
+This project is licensed under the MIT License.
 
 ## What can it do?
 

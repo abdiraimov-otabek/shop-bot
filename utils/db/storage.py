@@ -1,12 +1,23 @@
-import sqlite3 as lite
+import psycopg2
+import os
+from psycopg2.extras import RealDictCursor
 
 
 class DatabaseManager(object):
 
-    def __init__(self, path):
-        self.conn = lite.connect(path)
-        self.conn.execute("pragma foreign_keys = on")
-        self.conn.commit()
+    def __init__(self, connection_string=None):
+        if connection_string is None:
+            # Default PostgreSQL connection parameters
+            connection_string = {
+                "host": os.getenv("DB_HOST", "localhost"),
+                "database": os.getenv("DB_NAME", "shop_bot"),
+                "user": os.getenv("DB_USER", "postgres"),
+                "password": os.getenv("DB_PASSWORD", ""),
+                "port": os.getenv("DB_PORT", "5432"),
+            }
+
+        self.conn = psycopg2.connect(**connection_string)
+        self.conn.autocommit = True
         self.cur = self.conn.cursor()
 
     def create_tables(self):
@@ -17,46 +28,46 @@ class DatabaseManager(object):
                 title VARCHAR(255) NOT NULL,
                 body VARCHAR(255) NOT NULL,
                 photo VARCHAR(255) NOT NULL,
-                price INT NOT NULL,
+                price INTEGER NOT NULL,
                 tag VARCHAR(255) NOT NULL,
                 PRIMARY KEY (idx)
             );""",
             """
             CREATE TABLE IF NOT EXISTS orders (
-                cid INT NOT NULL,
+                cid BIGINT NOT NULL,
                 name VARCHAR(255) NOT NULL,
                 address VARCHAR(255) NOT NULL,
                 products VARCHAR(255) NOT NULL
             );""",
             """
             CREATE TABLE IF NOT EXISTS cart (
-                cid INT NOT NULL,
+                cid BIGINT NOT NULL,
                 idx VARCHAR(255) NOT NULL,
-                quantity INT NOT NULL
+                quantity INTEGER NOT NULL
             );""",
             """
             CREATE TABLE IF NOT EXISTS categories (
-                idx INT NOT NULL,
+                idx INTEGER NOT NULL,
                 title VARCHAR(255) NOT NULL,
                 PRIMARY KEY (idx)
             );""",
             """
             CREATE TABLE IF NOT EXISTS wallet (
-                cid INT NOT NULL,
-                balance INT NOT NULL,
+                cid BIGINT NOT NULL,
+                balance INTEGER NOT NULL,
                 PRIMARY KEY (cid)
             );""",
             """
             CREATE TABLE IF NOT EXISTS questions (
-                cid INT NOT NULL,
+                cid BIGINT NOT NULL,
                 question VARCHAR(255) NOT NULL
             );""",
             """
             CREATE TABLE IF NOT EXISTS users (
-                cid INT NOT NULL PRIMARY KEY,
+                cid BIGINT NOT NULL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 phone_number VARCHAR(20) NOT NULL,
-                balance INT DEFAULT 0
+                balance INTEGER DEFAULT 0
             );""",
         ]
         for sql in sql_statements:
@@ -70,7 +81,7 @@ class DatabaseManager(object):
         self.conn.commit()
 
     def fetchone(self, arg, values=None):
-        if values == None:
+        if values is None:
             self.cur.execute(arg)
         else:
             self.cur.execute(arg, values)
@@ -84,11 +95,11 @@ class DatabaseManager(object):
         return self.cur.fetchall()
 
     def add_user(self, cid, name, phone_number):
-        sql = "INSERT INTO users (cid, name, phone_number) VALUES (?, ?, ?)"
+        sql = "INSERT INTO users (cid, name, phone_number) VALUES (%s, %s, %s)"
         self.query(sql, (cid, name, phone_number))
 
     def get_user(self, cid):
-        sql = "SELECT * FROM users WHERE cid = ?"
+        sql = "SELECT * FROM users WHERE cid = %s"
         return self.fetchone(sql, (cid,))
 
     @staticmethod
@@ -98,7 +109,8 @@ class DatabaseManager(object):
         return sql.format(**parameters)
 
     def __del__(self):
-        self.conn.close()
+        if hasattr(self, "conn") and self.conn:
+            self.conn.close()
 
 
 """

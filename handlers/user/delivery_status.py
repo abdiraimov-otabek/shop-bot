@@ -7,10 +7,10 @@ from filters import IsUser
 @dp.message_handler(IsUser(), text=delivery_status)
 async def process_delivery_status(message: Message):
 
-    orders = db.fetchall("SELECT * FROM orders WHERE cid=?", (message.chat.id,))
+    orders = db.fetchall("SELECT * FROM orders WHERE cid=%s", (message.chat.id,))
 
     if len(orders) == 0:
-        await message.answer("Sizda aktiv buyurtmalar yo'q.")
+        await message.answer("Sizda hech qanday buyurtma yo'q.")
     else:
         await delivery_status_answer(message, orders)
 

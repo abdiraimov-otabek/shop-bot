@@ -5,16 +5,25 @@ from loader import db
 product_cb = CallbackData("product", "id", "action")
 
 
-def product_markup(idx="", price=0):
+def product_markup(idx="", action="add"):
 
     global product_cb
 
     markup = InlineKeyboardMarkup()
-    markup.add(
-        InlineKeyboardButton(
-            f"Savatga qo'shish - {price} so'm",
-            callback_data=product_cb.new(id=idx, action="add"),
+
+    if action == "add":
+        markup.add(
+            InlineKeyboardButton(
+                "Savatga qo'shish",
+                callback_data=product_cb.new(id=idx, action="add"),
+            )
         )
-    )
+    elif action == "show":
+        markup.add(
+            InlineKeyboardButton(
+                "Savatga qo'shish",
+                callback_data=product_cb.new(id=idx, action="add"),
+            )
+        )
 
     return markup

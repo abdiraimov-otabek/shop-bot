@@ -54,7 +54,7 @@ async def category_callback_handler(
 
     products = db.fetchall(
         """SELECT * FROM products product
-    WHERE product.tag = (SELECT title FROM categories WHERE idx=?)""",
+    WHERE product.tag = (SELECT title FROM categories WHERE idx=%s)""",
         (category_idx,),
     )
 
@@ -79,7 +79,7 @@ async def set_category_title_handler(message: Message, state: FSMContext):
 
     category = message.text
     idx = md5(category.encode("utf-8")).hexdigest()
-    db.query("INSERT INTO categories VALUES (?, ?)", (idx, category))
+    db.query("INSERT INTO categories VALUES (%s, %s)", (idx, category))
 
     await state.finish()
     await process_settings(message)
@@ -95,10 +95,10 @@ async def delete_category_handler(message: Message, state: FSMContext):
             idx = data["category_index"]
 
             db.query(
-                "DELETE FROM products WHERE tag IN (SELECT title FROM categories WHERE idx=?)",
+                "DELETE FROM products WHERE tag IN (SELECT title FROM categories WHERE idx=%s)",
                 (idx,),
             )
-            db.query("DELETE FROM categories WHERE idx=?", (idx,))
+            db.query("DELETE FROM categories WHERE idx=%s", (idx,))
 
             await message.answer("✅ Bajarildi!", reply_markup=ReplyKeyboardRemove())
             await process_settings(message)
@@ -276,12 +276,12 @@ async def process_confirm(message: Message, state: FSMContext):
         price = data["price"]
 
         tag = db.fetchone(
-            "SELECT title FROM categories WHERE idx=?", (data["category_index"],)
+            "SELECT title FROM categories WHERE idx=%s", (data["category_index"],)
         )[0]
         idx = md5(" ".join([title, body, price, tag]).encode("utf-8")).hexdigest()
 
         db.query(
-            "INSERT INTO products VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO products VALUES (%s, %s, %s, %s, %s, %s)",
             (idx, title, body, image, int(price), tag),
         )
 
@@ -297,7 +297,7 @@ async def process_confirm(message: Message, state: FSMContext):
 async def delete_product_callback_handler(query: CallbackQuery, callback_data: dict):
 
     product_idx = callback_data["id"]
-    db.query("DELETE FROM products WHERE idx=?", (product_idx,))
+    db.query("DELETE FROM products WHERE idx=%s", (product_idx,))
     await query.answer("🗑️ O'chirildi!")
     await query.message.delete()
 

@@ -19,7 +19,15 @@ async def order_answer(message, orders):
 
     res = ""
 
-    for order in orders:
-        res += f"Buyurtma <b>№{order[3]}</b>\n\n"
+    for i, order in enumerate(orders, 1):
+        print(order)
+        customer_id, customer_name, address, products = order
+
+        res += f"📦 <b>Buyurtma #{i}</b>\n"
+        res += f"👤 <b>Mijoz:</b> {customer_name}\n"
+        res += f"🆔 <b>ID:</b> {customer_id}\n"
+        res += f"📍 <b>Manzil:</b> {address}\n"
+        res += f"🛍️ <b>Mahsulotlar:</b> {products}\n"
+        res += f"{'─' * 30}\n\n"
 
     await message.answer(res)

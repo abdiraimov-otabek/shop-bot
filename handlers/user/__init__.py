@@ -5,5 +5,4 @@ from . import delivery_status
 from . import sos
 from . import wallet
 from . import register
-
-# This file is for importing all user handlers
+from . import my_info

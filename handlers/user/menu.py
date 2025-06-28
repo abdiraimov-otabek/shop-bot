@@ -8,7 +8,6 @@ cart = "🗂 Savat"
 orders = "✍️ Buyurtmalar"
 purchases = "💵 Xaridlar"
 my_info = "📝 Mening ma'lumotlarim"
-settings = "⚙️ Sozlamalar"
 balance = "💰 Hozirgi balans"
 delivery_status = "🎚️ Buyurtma statusi"
 questions = "❓ Savollar"
@@ -34,6 +33,6 @@ async def user_menu(message: Message):
     markup.add(catalog)
     markup.add(cart, orders)
     markup.add(purchases, balance)
-    markup.add(my_info, settings)
+    markup.add(my_info)
 
     await message.answer("Bosh menyu", reply_markup=markup)

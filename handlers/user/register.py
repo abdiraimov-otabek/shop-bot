@@ -1,5 +1,5 @@
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, ContentType
+from aiogram.types import Message, ContentType, ReplyKeyboardMarkup
 from loader import dp, db
 from states.register_state import Register
 from handlers.user.menu import user_menu
@@ -32,7 +32,21 @@ async def process_phone_number(message: Message, state: FSMContext):
         db.add_user(cid, name, phone_number)
 
     await state.finish()
-    await message.answer(
-        "Rahmat! Ro'yxatdan o'tdingiz.", reply_markup=user_menu(message)
+
+    # Create user menu markup
+    markup = ReplyKeyboardMarkup(selective=True)
+    from handlers.user.menu import (
+        catalog,
+        cart,
+        orders,
+        purchases,
+        balance,
+        my_info,
     )
-    await user_menu(message)
+
+    markup.add(catalog)
+    markup.add(cart, orders)
+    markup.add(purchases, balance)
+    markup.add(my_info)
+
+    await message.answer("Rahmat! Ro'yxatdan o'tdingiz.", reply_markup=markup)

@@ -39,3 +39,29 @@ def send_contact():
     markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     markup.add(KeyboardButton("📞 Telefon raqamni yuborish", request_contact=True))
     return markup
+
+
+def admin_markup():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add("➕ Mahsulot qo'shish")
+    markup.add("➕ Kategoriya qo'shish")
+    markup.add("❌ Mahsulotni o'chirish")
+    markup.add("❌ Kategoriyani o'chirish")
+    markup.add("👈 Ortga")
+    return markup
+
+
+def add_markup():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add("➕ Mahsulot qo'shish")
+    markup.add("➕ Kategoriya qo'shish")
+    markup.add("❌ Mahsulotni o'chirish")
+    markup.add("❌ Kategoriyani o'chirish")
+    markup.add("👈 Ortga")
+    return markup
+
+
+def category_markup():
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    markup.add("👈 Ortga")
+    return markup

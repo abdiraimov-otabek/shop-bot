@@ -21,7 +21,7 @@ from .menu import cart
 @dp.message_handler(IsUser(), text=cart)
 async def process_cart(message: Message, state: FSMContext):
 
-    cart_data = db.fetchall("SELECT * FROM cart WHERE cid=?", (message.chat.id,))
+    cart_data = db.fetchall("SELECT * FROM cart WHERE cid=%s", (message.chat.id,))
 
     if len(cart_data) == 0:
 
@@ -37,11 +37,11 @@ async def process_cart(message: Message, state: FSMContext):
 
         for _, idx, count_in_cart in cart_data:
 
-            product = db.fetchone("SELECT * FROM products WHERE idx=?", (idx,))
+            product = db.fetchone("SELECT * FROM products WHERE idx=%s", (idx,))
 
             if product == None:
 
-                db.query("DELETE FROM cart WHERE idx=?", (idx,))
+                db.query("DELETE FROM cart WHERE idx=%s", (idx,))
 
             else:
                 _, title, body, image, price, _ = product
@@ -106,7 +106,7 @@ async def product_callback_handler(
 
                     db.query(
                         """DELETE FROM cart
-                    WHERE cid = ? AND idx = ?""",
+                    WHERE cid = %s AND idx = %s""",
                         (query.message.chat.id, idx),
                     )
 
@@ -115,8 +115,8 @@ async def product_callback_handler(
 
                     db.query(
                         """UPDATE cart 
-                    SET quantity = ? 
-                    WHERE cid = ? AND idx = ?""",
+                    SET quantity = %s 
+                    WHERE cid = %s AND idx = %s""",
                         (count_in_cart, query.message.chat.id, idx),
                     )
 
@@ -269,17 +269,17 @@ async def process_confirm(message: Message, state: FSMContext):
                 idx + "=" + str(quantity)
                 for idx, quantity in db.fetchall(
                     """SELECT idx, quantity FROM cart
-            WHERE cid=?""",
+            WHERE cid=%s""",
                     (cid,),
                 )
             ]  # idx=quantity
 
             db.query(
-                "INSERT INTO orders VALUES (?, ?, ?, ?)",
+                "INSERT INTO orders VALUES (%s, %s, %s, %s)",
                 (cid, data["name"], data["address"], " ".join(products)),
             )
 
-            db.query("DELETE FROM cart WHERE cid=?", (cid,))
+            db.query("DELETE FROM cart WHERE cid=%s", (cid,))
 
             await message.answer(
                 "✅ Buyurtmangiz yo'lga chiqdi! 🚀\nIsm: <b>"
